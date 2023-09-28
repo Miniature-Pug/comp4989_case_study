@@ -48,6 +48,7 @@ async function prepIndex() {
     }
     let p = pages.getPages()
     console.log(p)
+    console.log(JSON.stringify(pages))
 }
 
 prepIndex()
