@@ -20,6 +20,7 @@ BASE_DIR   := $(shell pwd)
 # executables
 PYTHON3_LOCAL := $(call shell_variable, python3)
 PIP3_LOCAL    := $(call shell_variable, pip3)
+TERRAFORM     := $(call shell_variable, terraform)
 
 # venv executables
 PYTHON3 := ./$(VENV_NAME)/bin/python3
@@ -30,6 +31,7 @@ J2      := ./$(VENV_NAME)/bin/j2
 GENERATE_TEMPLATE_SCRIPT := $(BASE_DIR)/.pipeline/scripts/python/generate_temnplate.py
 
 # dir
+TERRAFORM_DIR              := $(BASE_DIR)/.pipeline/terraform
 TEMPLATE_FOLDER            := $(BASE_DIR)/.pipeline/templates
 SAMPLE_HTML_OUTPUT_FOLDER  := $(BASE_DIR)/src/fe/html
 INDEX_HTML_OUTPUT_FOLDER   := $(BASE_DIR)/src/fe
@@ -50,6 +52,26 @@ generate-index-page:
 generate-sample-pages:
 	@$(call info_logger, Generating sample HTML pages)
 	$(PYTHON3) $(GENERATE_TEMPLATE_SCRIPT) --template-folder $(TEMPLATE_FOLDER) --sample-html-output-folder $(SAMPLE_HTML_OUTPUT_FOLDER) --sample-html-number 9 --sample-html
+
+tf-init:
+	@$(call info_logger, Terrafomr Init)
+	cd $(TERRAFORM_DIR) && $(TERRAFORM) init
+
+tf-fmt:
+	@$(call info_logger, Terrafomr Format)
+	cd $(TERRAFORM_DIR) && $(TERRAFORM) fmt --recursive
+
+tf-plan:
+	@$(call info_logger, Terrafomr plan)
+	cd $(TERRAFORM_DIR) && $(TERRAFORM) plan -lock-timeout=5m
+
+tf-apply:
+	@$(call info_logger, Terrafomr apply)
+	cd $(TERRAFORM_DIR) && $(TERRAFORM) apply --auto-approve -lock-timeout=5m
+
+tf-destroy:
+	@$(call info_logger, Terrafomr Destroy)
+	cd $(TERRAFORM_DIR) && $(TERRAFORM) destroy --auto-approve -lock-timeout=5m
 
 # cleanup
 clean-virtualenv: garbage := "$(VENV_NAME)"
