@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="group_3">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample {{ number }}</title>
+</head>
+
+<body>
+    <p><h1>Sample Page {{ number }}</h1></p>
+    <hr><br>
+    <div id="backlinks_container">
+        <h2>List of backlinks</h2>
+        <ul>
+        {%- for i in range(0, range(0, total_samples) | random) %}
+            {%- set randSample = range(0, total_samples) | random %}
+            <li id="sample_{{ randSample }}" class="backlinks_list">
+                <a href="./sample_{{ randSample }}.html">Sample Page {{ randSample }}</a>
+            </li>
+        {%- endfor %}
+        </ul>
+    </div>
+    <hr>
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="group_3">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Home</title>
+    <script type="module" src="./js/index.js" defer></script>
+</head>
+
+<body>
+    <h1>Project Home</h1>
+    <hr><br>
+    <div id="unranked_container">
+        <h2>List of webpages (Un-ranked)</h2>
+        <ul>
+        {%- for i in range(number) %}
+            <li id="sample_{{ i }}" class="unranked_page_list">
+                <a href="./html/sample_{{ i }}.html">Sample Page {{ i }}</a>
+            </li>
+        {%- endfor %}
+        </ul>
+    </div>
+
+    <br><hr>
+    <button id="rank">Rank Me!</button>
+    <hr><br>
+
+    <div id="ranked_container">
+        <h2>List of webpages (Ranked)</h2>
+    </div>
+
+</body>
+
+</html>
