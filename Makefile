@@ -2,7 +2,11 @@
 
 # delete the target of a rule if the rule fails and a command exits with non-zero exit status
 .DELETE_ON_ERROR:
-SHELL := /usr/bin/bash
+ifeq ($(UNAME), Darwin)
+	SHELL := /bin/zsh
+else
+	SHELL := /usr/bin/bash
+endif
 
 #----------------
 # global functions
