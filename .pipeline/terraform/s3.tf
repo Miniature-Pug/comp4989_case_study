@@ -23,3 +23,17 @@ resource "null_resource" "cache-invaldiation" {
 
   depends_on = [aws_s3_object.static_files]
 }
+
+resource "aws_s3_object" "lambda" {
+  bucket       = data.aws_s3_bucket.cloudfront.id
+  key          = "${var.s3_bucket_prefix}lambda/lambda_function.zip"
+  source       = "lambda_function.zip"
+  content_type = "application/zip"
+  etag         = filemd5("lambda_function.zip")
+}
+
+data "aws_s3_object" "lambda" {
+  bucket     = "bcit-cloudfront"
+  key        = "${var.s3_bucket_prefix}lambda/lambda_function.zip"
+  depends_on = [aws_s3_object.lambda]
+}

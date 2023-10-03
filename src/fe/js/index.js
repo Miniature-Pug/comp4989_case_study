@@ -4,7 +4,11 @@ const Pages = class {
     }
 
     setPage(id, href, name, backlinks) {
-        this.pages[id] = {"name": name, "href": href, "backlinks": backlinks}
+        this.pages[id] = {
+            "name": name,
+            "href": href,
+            "backlinks": backlinks
+        }
     }
 
     getPages() {
@@ -14,21 +18,21 @@ const Pages = class {
 
 async function getBackLinksFromUrl(url) {
     try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
 
-      const text = await response.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(text, 'text/html');
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
 
-      const links = Array.from(doc.querySelectorAll('.backlinks_list')).map((item) => item.id);
+        const links = Array.from(doc.querySelectorAll('.backlinks_list')).map((item) => item.id);
 
-      return links;
+        return links;
     } catch (error) {
-      console.error('Error:', error);
-      return [];
+        console.error('Error:', error);
+        return [];
     }
 }
 
@@ -47,8 +51,29 @@ async function prepIndex() {
         pages.setPage(id, href, text, backlinks)
     }
     let p = pages.getPages()
-    console.log(p)
+    // console.log(p)
     console.log(JSON.stringify(pages))
+    document.getElementById("rank").addEventListener("click", async () => {
+        try {
+            const response = await fetch('https://c6kap9d23f.execute-api.us-east-1.amazonaws.com/serverless_lambda/rank', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Access-Control-Allow-Origin": "*"
+                },
+                body: JSON.stringify(pages),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Response:', data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
 }
 
 prepIndex()

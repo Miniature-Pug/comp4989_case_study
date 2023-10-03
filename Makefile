@@ -25,6 +25,7 @@ BASE_DIR   := $(shell pwd)
 PYTHON3_LOCAL := $(call shell_variable, python3)
 PIP3_LOCAL    := $(call shell_variable, pip3)
 TERRAFORM     := $(call shell_variable, terraform)
+ZIP           := $(call shell_variable, zip)
 
 # venv executables
 PYTHON3 := ./$(VENV_NAME)/bin/python3
@@ -33,12 +34,15 @@ J2      := ./$(VENV_NAME)/bin/j2
 
 # files
 GENERATE_TEMPLATE_SCRIPT := $(BASE_DIR)/.pipeline/scripts/python/generate_temnplate.py
+LAMBDA_ZIP               := $(BASE_DIR)/.pipeline/terraform/lambda_function.zip
+LAMBDA_FUNCTION          := $(BASE_DIR)/src/be/serverless/lambda/lambda_function.py
 
 # dir
 TERRAFORM_DIR              := $(BASE_DIR)/.pipeline/terraform
 TEMPLATE_FOLDER            := $(BASE_DIR)/.pipeline/templates
 SAMPLE_HTML_OUTPUT_FOLDER  := $(BASE_DIR)/src/fe/html
 INDEX_HTML_OUTPUT_FOLDER   := $(BASE_DIR)/src/fe
+LAMBDA_DEPENDENCIES        := $(BASE_DIR)/$(VENV_NAME)/lib/python3.10/site-packages
 #----------------
 
 #----------------
@@ -48,6 +52,11 @@ prep-virtual-environment:
 	@$(call info_logger, Preparing python virtual environment)
 	$(PYTHON3_LOCAL) -m venv ./$(VENV_NAME)
 	$(PIP3) install -r $(BASE_DIR)/requirements.txt
+
+zip-lambda-dependencies:
+	@$(call info_logger, Zipping lambda function dependencies)
+	cd $(LAMBDA_DEPENDENCIES) && $(ZIP) -r $(LAMBDA_ZIP) .
+	$(ZIP) -j $(LAMBDA_ZIP) $(LAMBDA_FUNCTION)
 
 generate-index-page:
 	@$(call info_logger, Generating index HTML page)
@@ -65,15 +74,15 @@ tf-fmt:
 	@$(call info_logger, Terrafomr Format)
 	cd $(TERRAFORM_DIR) && $(TERRAFORM) fmt --recursive
 
-tf-plan:
+tf-plan: prep-virtual-environment zip-lambda-dependencies
 	@$(call info_logger, Terrafomr plan)
 	cd $(TERRAFORM_DIR) && $(TERRAFORM) plan -lock-timeout=5m
 
-tf-apply:
+tf-apply: clean-virtualenv clean-zip prep-virtual-environment zip-lambda-dependencies
 	@$(call info_logger, Terrafomr apply)
 	cd $(TERRAFORM_DIR) && $(TERRAFORM) apply --auto-approve -lock-timeout=5m
 
-tf-destroy:
+tf-destroy: prep-virtual-environment zip-lambda-dependencies
 	@$(call info_logger, Terrafomr Destroy)
 	cd $(TERRAFORM_DIR) && $(TERRAFORM) destroy --auto-approve -lock-timeout=5m
 
@@ -81,6 +90,11 @@ tf-destroy:
 clean-virtualenv: garbage := "$(VENV_NAME)"
 clean-virtualenv:
 	@$(call info_logger, Cleaning python virtual environment)
+	@$(call garbage_collector, $(garbage))
+
+clean-zip: garbage := "$(LAMBDA_ZIP)"
+clean-zip:
+	@$(call info_logger, Cleaning lambda zip file)
 	@$(call garbage_collector, $(garbage))
 
 # master commands
