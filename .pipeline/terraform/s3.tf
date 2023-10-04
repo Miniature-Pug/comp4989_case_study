@@ -17,6 +17,10 @@ resource "aws_s3_object" "static_files" {
 
 resource "null_resource" "cache-invaldiation" {
 
+  triggers = {
+    always_run = timestamp()
+  }
+
   provisioner "local-exec" {
     command = "aws cloudfront create-invalidation --distribution-id ${data.aws_cloudfront_distribution.static.id} --paths '/*'"
   }
