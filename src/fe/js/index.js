@@ -52,7 +52,7 @@ async function prepIndex() {
     }
     console.log(JSON.stringify(pages))
 
-    document.getElementById("rank").addEventListener("click", async () => {
+    async function fetchAndDisplayData() {
         try {
             const response = await fetch('https://c6kap9d23f.execute-api.us-east-1.amazonaws.com/serverless_lambda/rank', {
                 method: 'POST',
@@ -99,7 +99,9 @@ async function prepIndex() {
         } catch (error) {
             console.error('Error:', error);
         }
-    });
+    }
+
+    document.getElementById("rank").addEventListener("click", fetchAndDisplayData.catch(err => console.log(err)));
 }
 
 prepIndex()
