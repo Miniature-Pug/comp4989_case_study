@@ -29,58 +29,40 @@ def pagerank(G, alpha=0.85, personalization=None,
     an algorithm to rank web pages.
 
     Parameters
-    ----------
-    G : graph
-    A NetworkX graph. Undirected graphs will be converted to a directed
-    graph with two directed edges for each undirected edge.
 
-    alpha : float, optional
-    Damping parameter for PageRank, default=0.85.
+    G: graph
+    A NetworkX graph. Undirected graphs will be transformed into a directed graph with two directed
+    edges for each undirected edge.
+
+    alpha: float, optional
+    Damping parameter for PageRank, with a default value of 0.85.
 
     personalization: dict, optional
-    The "personalization vector" consisting of a dictionary with a
-    key for every graph node and nonzero personalization value for each node.
-    By default, a uniform distribution is used.
+    The "personalization vector" represented as a dictionary, with a key for each graph node and a
+    non-zero personalization value for each node. By default, a uniform distribution is used.
 
-    max_iter : integer, optional
-    Maximum number of iterations in power method eigenvalue solver.
+    max_iter: integer, optional
+    The maximum number of iterations in the power method eigenvalue solver.
 
-    tol : float, optional
-    Error tolerance used to check convergence in power method solver.
+    tol: float, optional
+    The error tolerance used to assess convergence in the power method solver.
 
-    nstart : dictionary, optional
-    Starting value of PageRank iteration for each node.
+    nstart: dictionary, optional
+    The initial PageRank values for each node.
 
-    weight : key, optional
-    Edge data key to use as weight. If None weights are set to 1.
+    weight: key, optional
+    The edge data key to be used as the weight. If set to None, weights are assumed to be 1.
 
     dangling: dict, optional
-    The outedges to be assigned to any "dangling" nodes, i.e., nodes without
-    any outedges. The dict key is the node the outedge points to and the dict
-    value is the weight of that outedge. By default, dangling nodes are given
-    outedges according to the personalization vector (uniform if not
-    specified). This must be selected to result in an irreducible transition
-    matrix (see notes under google_matrix). It may be common to have the
-    dangling dict to be the same as the personalization dict.
+    The outedges to be assigned to any "dangling" nodes, i.e., nodes without any outedges.
+    The dictionary key indicates the node to which the outedge points, and the dictionary value
+    represents the weight of that outedge. By default, dangling nodes receive outedges based on the
+    personalization vector (uniform if not specified).
 
     Returns
     -------
     pagerank : dictionary
-    Dictionary of nodes with PageRank as value
-
-    Notes
-    -----
-    The eigenvector calculation is done by the power iteration method
-    and has no guarantee of convergence. The iteration will stop
-    after max_iter iterations or an error tolerance of
-    number_of_nodes(G)*tol has been reached.
-
-    The PageRank algorithm was designed for directed graphs but this
-    algorithm does not check if the input graph is directed and will
-    execute on undirected graphs by converting each edge in the
-    directed graph to two edges.
-
-
+    A dictionary of nodes with PageRank as value
     """
     if len(G) == 0:
         return {}
@@ -112,7 +94,6 @@ def pagerank(G, alpha=0.85, personalization=None,
         p = dict((k, v / s) for k, v in personalization.items())
 
     if dangling is None:
-
         # Use personalization vector if dangling vector not specified
         dangling_weights = p
     else:
@@ -125,13 +106,12 @@ def pagerank(G, alpha=0.85, personalization=None,
         dangling_weights = dict((k, v / s) for k, v in dangling.items())
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
-    # power iteration: make up to max_iter iterations
+    # power iteration: up to max_iter iterations
     for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast.keys(), 0)
         danglesum = alpha * sum(xlast[n] for n in dangling_nodes)
         for n in x:
-
             # this matrix multiply looks odd because it is
             # doing a left multiply x^T=xlast^T*W
             for nbr in W[n]:
@@ -146,10 +126,6 @@ def pagerank(G, alpha=0.85, personalization=None,
                         'in %d iterations.' % max_iter)
 
 
-# Graph = ingest("../src/be/serverless/lambda/test.json")
-# Graph = ingest("../src/be/serverless/lambda/test_dangling.json")
-# Graph = ingest("../src/be/serverless/lambda/test_disconnected.json")
-# Graph = ingest("../src/be/serverless/lambda/test_dangling_disconnected.json")
-Graph = ingest("../src/be/serverless/lambda/test_10000.json")
+Graph = ingest("test_disconnected.json")
 print(pagerank(Graph))
 print(nx.pagerank(Graph))
