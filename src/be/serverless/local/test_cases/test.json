@@ -1,0 +1,29 @@
+{
+    "pages": {
+        "sample_1": {
+            "name": "Sample Page 1",
+            "href": "./html/sample_1.html",
+            "backlinks": ["sample_2", "sample_3"]
+        },
+        "sample_2": {
+            "name": "Sample Page 2",
+            "href": "./html/sample_2.html",
+            "backlinks": ["sample_4", "sample_5"]
+        },
+        "sample_3": {
+            "name": "Sample Page 3",
+            "href": "./html/sample_3.html",
+            "backlinks": ["sample_1", "sample_5"]
+        },
+        "sample_4": {
+            "name": "Sample Page 4",
+            "href": "./html/sample_4.html",
+            "backlinks": ["sample_5"]
+        },
+        "sample_5": {
+            "name": "Sample Page 5",
+            "href": "./html/sample_5.html",
+            "backlinks": ["sample_1", "sample_2"]
+        }
+    }
+}
