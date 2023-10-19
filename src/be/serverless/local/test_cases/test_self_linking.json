@@ -1,0 +1,49 @@
+{
+    "pages": {
+        "sample_1": {
+            "name": "Sample Page 1",
+            "href": "./html/sample_1.html",
+            "backlinks": ["sample_1", "sample_2"]
+        },
+        "sample_2": {
+            "name": "Sample Page 2",
+            "href": "./html/sample_2.html",
+            "backlinks": ["sample_3"]
+        },
+        "sample_3": {
+            "name": "Sample Page 3",
+            "href": "./html/sample_3.html",
+            "backlinks": ["sample_2", "sample_4"]
+        },
+        "sample_4": {
+            "name": "Sample Page 4",
+            "href": "./html/sample_4.html",
+            "backlinks": ["sample_3", "sample_5"]
+        },
+        "sample_5": {
+            "name": "Sample Page 5",
+            "href": "./html/sample_5.html",
+            "backlinks": ["sample_3"]
+        },
+        "sample_6": {
+            "name": "Sample Page 5",
+            "href": "./html/sample_6.html",
+            "backlinks": ["sample_1"]
+        },
+        "sample_7": {
+            "name": "Sample Page 5",
+            "href": "./html/sample_7.html",
+            "backlinks": ["sample_1"]
+        },
+        "sample_8": {
+            "name": "Sample Page 5",
+            "href": "./html/sample_8.html",
+            "backlinks": ["sample_1"]
+        },
+        "sample_9": {
+            "name": "Sample Page 5",
+            "href": "./html/sample_9.html",
+            "backlinks": ["sample_1"]
+        }
+    }
+}

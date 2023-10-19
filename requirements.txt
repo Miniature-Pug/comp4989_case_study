@@ -2,3 +2,5 @@ j2cli[yaml]
 Jinja2
 networkx
 matplotlib
+scipy
+pandas

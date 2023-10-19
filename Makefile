@@ -18,8 +18,9 @@ garbage_collector = $(foreach shit, $1, $(shell rm -rf ${shit} ||:))
 
 #----------------
 # simple expansion variables
-VENV_NAME  := venv
-BASE_DIR   := $(shell pwd)
+VENV_NAME   := venv
+BASE_DIR    := $(shell pwd)
+NUM_SAMPLES := 8
 
 # executables
 PYTHON3_LOCAL := $(call shell_variable, python3)
@@ -60,11 +61,11 @@ zip-lambda-dependencies:
 
 generate-index-page:
 	@$(call info_logger, Generating index HTML page)
-	$(PYTHON3) $(GENERATE_TEMPLATE_SCRIPT) --template-folder $(TEMPLATE_FOLDER) --index-html-output-folder $(INDEX_HTML_OUTPUT_FOLDER) --num-sample-links 9 --index-html
+	$(PYTHON3) $(GENERATE_TEMPLATE_SCRIPT) --template-folder $(TEMPLATE_FOLDER) --index-html-output-folder $(INDEX_HTML_OUTPUT_FOLDER) --num-sample-links $(NUM_SAMPLES) --index-html
 
 generate-sample-pages:
 	@$(call info_logger, Generating sample HTML pages)
-	$(PYTHON3) $(GENERATE_TEMPLATE_SCRIPT) --template-folder $(TEMPLATE_FOLDER) --sample-html-output-folder $(SAMPLE_HTML_OUTPUT_FOLDER) --sample-html-number 9 --sample-html
+	$(PYTHON3) $(GENERATE_TEMPLATE_SCRIPT) --template-folder $(TEMPLATE_FOLDER) --sample-html-output-folder $(SAMPLE_HTML_OUTPUT_FOLDER) --sample-html-number $(NUM_SAMPLES) --sample-html
 
 tf-init:
 	@$(call info_logger, Terrafomr Init)
@@ -96,6 +97,13 @@ clean-zip: garbage := "$(LAMBDA_ZIP)"
 clean-zip:
 	@$(call info_logger, Cleaning lambda zip file)
 	@$(call garbage_collector, $(garbage))
+
+clean-samples: garbage := "sample"
+clean-samples:
+	@for i in $$(seq 0 $(NUM_SAMPLES)); do \
+		rm -rf "$(SAMPLE_HTML_OUTPUT_FOLDER)/sample_$$i.html"; \
+	done
+	rm -rf "$(INDEX_HTML_OUTPUT_FOLDER)/index.html"; \
 
 # master commands
 clean: clean-virtualenv

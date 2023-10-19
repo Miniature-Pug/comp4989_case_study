@@ -1,3 +1,5 @@
+import time
+import pandas as pd
 import networkx as nx
 from networkx import NetworkXError
 import json
@@ -12,7 +14,7 @@ def ingest(filename):
         for link in data["backlinks"]:
             MG.add_edge(page, link, weight=1)
     nx.draw(MG, with_labels=True)
-    plt.show()
+    plt.show(block=True)
     undirected_MG = MG.to_undirected()
     print([c for c in sorted(nx.connected_components(undirected_MG), key=len, reverse=True)])
 
@@ -86,8 +88,14 @@ def pagerank(G, alpha=0.85, personalization=None,
         return {}
 
     D = G if G.is_directed() else G.to_directed()
+    A = nx.adjacency_matrix(D)
+
+    print(A.todense())
     # Create a copy in (right) stochastic form
     W = nx.stochastic_graph(D, weight=weight)
+    A = nx.adjacency_matrix(W)
+
+    print(A.todense())
     N = W.number_of_nodes()
 
     # Choose fixed starting vector if not given
@@ -111,6 +119,8 @@ def pagerank(G, alpha=0.85, personalization=None,
         s = float(sum(personalization.values()))
         p = dict((k, v / s) for k, v in personalization.items())
 
+    print(p)
+
     if dangling is None:
 
         # Use personalization vector if dangling vector not specified
@@ -126,6 +136,8 @@ def pagerank(G, alpha=0.85, personalization=None,
     dangling_nodes = [n for n in W if W.out_degree(n, weight=weight) == 0.0]
 
     # power iteration: make up to max_iter iterations
+    iter_list = []
+    iter_list.append(p)
     for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast.keys(), 0)
@@ -140,16 +152,24 @@ def pagerank(G, alpha=0.85, personalization=None,
 
         # check convergence, l1 norm
         err = sum(abs(x[n] - xlast[n]) for n in x)
+        print(x)
+        iter_list.append(x)
         if err < N * tol:
+            df = pd.DataFrame(iter_list)
+            for column in df.columns:
+                plt.plot(df.index, df[column], marker='o', label=column)
+            plt.xlabel('Iteration Number')
+            plt.ylabel('Ranking')
+            plt.title('Behavior of Values Over Iterations')
+            plt.xticks(df.index)  # Set x-axis ticks to match the index
+            plt.legend(loc='upper right')
+            plt.show()
             return x
+
     raise NetworkXError('pagerank: power iteration failed to converge '
                         'in %d iterations.' % max_iter)
 
 
-# Graph = ingest("../src/be/serverless/lambda/test.json")
-# Graph = ingest("../src/be/serverless/lambda/test_dangling.json")
-# Graph = ingest("../src/be/serverless/lambda/test_disconnected.json")
-# Graph = ingest("../src/be/serverless/lambda/test_dangling_disconnected.json")
-Graph = ingest("../src/be/serverless/lambda/test_10000.json")
+Graph = ingest("test_cases/test.json")
 print(pagerank(Graph))
 print(nx.pagerank(Graph))
